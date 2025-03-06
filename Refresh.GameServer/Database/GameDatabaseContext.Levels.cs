@@ -6,6 +6,7 @@ using Refresh.Common.Constants;
 using Refresh.GameServer.Authentication;
 using Refresh.GameServer.Endpoints.ApiV3.DataTypes.Request;
 using Refresh.GameServer.Endpoints.Game.Levels.FilterSettings;
+using Refresh.GameServer.Configuration;
 using Refresh.GameServer.Extensions;
 using Refresh.GameServer.Services;
 using Refresh.GameServer.Types.Activity;
@@ -178,6 +179,25 @@ public partial class GameDatabaseContext // Levels
         {
             this.GameLevels.Remove(level);
         });
+    }
+
+    public void IncrementLevelUploadCount(GameUser user)
+    {
+        // Set ExpiryDate if the user has uploaded their first level within a day's length of time
+        if (user.UserDailyLevelUploads.Count == 0) 
+            user.DailyLevelUploads.ExpiryDate = this._time.Now + TimeSpan.FromDays(1);
+            user.DailyLevelUploads.DateIsExpired = false;
+
+        user.UserDailyLevelUploads.Count += 1;
+    }
+
+    public void ExpireLevelUploadCount(GameUser user)
+    {
+        if (user.DailyLevelUploads.ExpiryDate < this._time.Now)
+        {
+            user.DailyLevelUploads.DateIsExpired = true;
+            user.DailyLevelUploads.Count = 0;
+        }
     }
 
     

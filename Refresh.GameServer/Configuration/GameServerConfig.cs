@@ -82,6 +82,10 @@ public class GameServerConfig : Config
     /// </summary>
     public int UserFilesizeQuota { get; set; } = 100 * 1_048_576;
     /// <summary>
+    /// The amount of levels the user is allowed to upload in a day before level uploads are blocked
+    /// </summary>
+    public int DailyLevelUploadQuota { get; set; } = 10;
+    /// <summary>
     /// Whether to print the room state whenever a `FindBestRoom` match returns no results
     /// </summary>
     public bool PrintRoomStateWhenNoFoundRooms { get; set; } = true;

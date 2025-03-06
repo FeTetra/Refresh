@@ -4,6 +4,7 @@ using Realms;
 using Bunkum.Core.RateLimit;
 using Refresh.GameServer.Types.Playlists;
 using Refresh.GameServer.Types.Roles;
+using Refresh.GameServer.Types.DailyLevelUploads;
 
 namespace Refresh.GameServer.Types.UserData;
 
@@ -49,6 +50,8 @@ public partial class GameUser : IRealmObject, IRateLimitUser
     /// The cumulative size of all the assets the user has uploaded
     /// </summary>
     public int FilesizeQuotaUsage { get; set; }
+
+    public DailyLevelUploads UserDailyLevelUploads { get; set; }
 
     public string Description { get; set; } = "";
 

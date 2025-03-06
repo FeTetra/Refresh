@@ -7,6 +7,7 @@ using Bunkum.Protocols.Http;
 using Refresh.Common.Constants;
 using Refresh.Common.Verification;
 using Refresh.GameServer.Authentication;
+using Refresh.GameServer.Configuration;
 using Refresh.GameServer.Database;
 using Refresh.GameServer.Endpoints.Game.DataTypes.Request;
 using Refresh.GameServer.Endpoints.Game.DataTypes.Response;
@@ -120,6 +121,12 @@ public class PublishEndpoints : EndpointGroup
         if (!VerifyLevel(body, dataContext)) return BadRequest;
 
         GameUser user = dataContext.User!;
+
+        if (user.LevelsUploadedToday >= GameServerConfig.DailyLevelUploadQuota)
+        {
+            dataContext.Database.AddPublishFailNotification("You have exceeded the daily upload limit.");
+            return BadRequest;
+        }
         
         GameLevel level = body.ToGameLevel(user);
         level.GameVersion = dataContext.Token!.TokenGame;
@@ -172,6 +179,7 @@ public class PublishEndpoints : EndpointGroup
         level.Publisher = dataContext.User;
 
         dataContext.Database.AddLevel(level);
+        dataContext.Database.IncrementLevelUploadCount(user);
 
         // Update the modded status of the level
         // NOTE: this wont do anything if the slot is uploaded before the level resource,
